@@ -1,75 +1,79 @@
+#include <iostream>
 #include <fstream>
 #include "cars.h"
-
+using namespace std;
 
 int main()
 {
+    // Set console color (Windows only - comment out for cross-platform)
+#ifdef _WIN32
     system("color E1");
-    fstream file;
+#endif
+
     string file_name = "cars_data.txt";
-    file.open(file_name, ios::in | ios::out | ios::app);
 
-    if (!file.is_open())
-    {
-        cerr << "Failed to open the file." << std::endl;
-        return 1;
-    }
-
+    // Initialize the car rental system
     System carSystem;
-    carSystem.getFileCars("cars_data.txt");
-    int C;
-    C = Menu();
-    time_point<high_resolution_clock> start = high_resolution_clock::now();
-    time_point<high_resolution_clock> stop = high_resolution_clock::now();
 
+    // Load existing car data from file (if file exists)
+    carSystem.getFileCars(file_name);
 
-    while (C != 7)
+    int choice;
+    choice = Menu();
+
+    // Main program loop - continues until user chooses to exit (option 7)
+    while (choice != 7)
     {
-        if (C == 1)
+        if (choice == 1)  // Add a new car
         {
             Car* newCar = create_car();
             carSystem.addCar(newCar);
-            carSystem.savecars("cars_data.txt");
+            carSystem.savecars(file_name);
         }
-        else if (C == 2)
+        else if (choice == 2)  // Delete a car
         {
-            string model, unusedline;
-            cout << "\nEnter the car model (for example : BMW I3) : ";
-            getline(cin, unusedline);
+            string model;
+            cout << "\nEnter the car model (for example: I3 for BMW I3): ";
+            cin.ignore();  // Clear input buffer
             getline(cin, model);
             carSystem.deleteCar(model);
-            carSystem.savecars("cars_data.txt");
+            carSystem.savecars(file_name);
         }
-        else if (C == 3)
+        else if (choice == 3)  // View all cars
         {
             carSystem.displaycars();
         }
-        else if (C == 4)
+        else if (choice == 4)  // Search for a car
         {
             carLookUp(carSystem);
         }
-        else if (C == 5)
+        else if (choice == 5)  // Rent a car
         {
-            string model, unusedline;
-            cout << "\nEnter the car model (for example : BMW I3) : ";
-            getline(cin, unusedline);
+            string model;
+            cout << "\nEnter the car model (for example: I3 for BMW I3): ";
+            cin.ignore();  // Clear input buffer
             getline(cin, model);
             carSystem.rentCar(model);
-            auto start = std::chrono::high_resolution_clock::now();
-            carSystem.savecars("cars_data.txt");
+            carSystem.savecars(file_name);
         }
-        else if (C == 6)
+        else if (choice == 6)  // Return a car
         {
-            string model, unusedline;
-            cout << "\nEnter the car model (for example : BMW I3) : ";
-            getline(cin, unusedline);
+            string model;
+            cout << "\nEnter the car model (for example: I3 for BMW I3): ";
+            cin.ignore();  // Clear input buffer
             getline(cin, model);
             carSystem.returnCar(model);
-            carSystem.savecars("cars_data.txt");
+            carSystem.savecars(file_name);
         }
-        C = Menu();
+
+        // Display menu again for next operation
+        choice = Menu();
     }
 
-    file.close();
+    // Final save before exiting
+    carSystem.savecars(file_name);
+
+    cout << "\nThank you for using the Car Rental System. Goodbye!\n";
+
     return 0;
 }
